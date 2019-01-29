@@ -19,7 +19,7 @@ const mainState = {
 
         this.clouds = game.add.group();
 
-    this.fond = game.add.tileSprite(0, 0, 800, 890, "fond");
+        this.fond = game.add.tileSprite(0, 0, 800, 890, "fond");
 
         // Display the plane at the position x=100 and y=245
         this.plane = game.add.sprite(100, 245, "plane");
@@ -43,6 +43,12 @@ const mainState = {
         left.onDown.add(this.left, this);
 
         this.timer = game.time.events.loop(1500, this.addOnePipe, this);
+
+        this.score = 0;
+        this.labelScore = game.add.text(20, 20, "0", {
+          font: "30px Arial",
+          fill: "#ffffff"
+        });
     },
 
     update: function () {
@@ -90,16 +96,17 @@ const mainState = {
         // Add a vertical velocity to the plane
         this.plane.body.velocity.x = -350;
     },
-
-
     addOnePipe: function (x, y) {
-        for(let i=0; i<6; i++){
-        let hole = Math.floor(Math.random() * 750)
-        this.cloud = game.add.sprite(hole, 0, "cloud");
-        game.physics.arcade.enable(this.cloud);
-        this.cloud.body.gravity.y = hole;
+        nbClouds = 6;// + Math.floor(this.score/5);
+        for(let i=0; i<nbClouds; i++){
+            const x = Math.floor(Math.random() * 750)
+            const gravity = Math.floor(Math.random() * 750)
+            this.cloud = game.add.sprite(x, 0, "cloud");
+            game.physics.arcade.enable(this.cloud);
+            this.cloud.body.gravity.y = gravity;
         }
-        
+        this.score += 1;
+        this.labelScore.text = this.score;
     }
 }
 
