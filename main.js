@@ -8,6 +8,8 @@ const mainState = {
         game.load.image("plane", "assets/plane.png");
         game.load.image("cloud", "assets/cloud.png");
         game.load.image("fond", "assets/fond.jpg");
+        game.load.image("fire", "assets/fire.png");
+        game.load.image("missile", "assets/missile.png")
         // This function is called after the preload function
         // Here we set up the game, display sprites, etc.
 
@@ -17,9 +19,9 @@ const mainState = {
         // Set the physics system
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
-        this.clouds = game.add.group();
 
-    this.fond = game.add.tileSprite(0, 0, 800, 890, "fond");
+
+        this.fond = game.add.tileSprite(0, 0, 800, 890, "fond");
 
         // Display the plane at the position x=100 and y=245
         this.plane = game.add.sprite(100, 245, "plane");
@@ -42,7 +44,17 @@ const mainState = {
         const left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         left.onDown.add(this.left, this);
 
-        this.timer = game.time.events.loop(1500, this.addOnePipe, this);
+        const missile = game.input.keyboard.addKey(Phaser.Keyboard.R);
+        missile.onDown.add(this.missile, this);
+
+        const fire = game.input.keyboard.addKey(Phaser.Keyboard.F);
+        fire.onDown.add(this.fire, this);
+
+
+        this.timer = game.time.events.loop(1500, this.addOnSky, this);
+
+        this.sky = game.add.group();
+
     },
 
     update: function () {
@@ -52,12 +64,17 @@ const mainState = {
 
         this.fond.tilePosition.y += 2;
 
-    // add a window to limit the movements of the aircraft in the size of the game screen
-    if (this.plane.y < 0) this.plane.y = 0;
-    if (this.plane.y > 840) this.plane.y = 840;
-    if (this.plane.x < 0) this.plane.x = 0;
-    if (this.plane.x > 750) this.plane.x = 750;
-  },
+        // add a window to limit the movements of the aircraft in the size of the game screen
+        if (this.plane.y < 0) this.plane.y = 0;
+        if (this.plane.y > 840) this.plane.y = 840;
+        if (this.plane.x < 0) this.plane.x = 0;
+        if (this.plane.x > 750) this.plane.x = 750;
+
+        game.physics.arcade.overlap(
+            this.fire, this.sky, this.collision, null, this);
+    },
+
+
 
 
     go: function () {
@@ -92,16 +109,44 @@ const mainState = {
     },
 
 
-    addOnePipe: function (x, y) {
-        for(let i=0; i<6; i++){
-        let hole = Math.floor(Math.random() * 750)
-        this.cloud = game.add.sprite(hole, 0, "cloud");
-        game.physics.arcade.enable(this.cloud);
-        this.cloud.body.gravity.y = hole;
-        }
+    addOneCloud: function (x,y) {
+            let cloud = game.add.sprite(x, y, "cloud");
+            this.sky.add(cloud);
+            game.physics.arcade.enable(cloud);
+            cloud.body.gravity.y = x;
+            cloud.checkWorldBounds = true;
+            cloud.outOfBoundsKill = true;
+        
+    },
+
+    addOnSky:function(){
+        
+        for (var i = 0; i < 6; i++) {
+            var hole = Math.floor(Math.random() * 750);
+            this.addOneCloud(hole,0);
+            
+    }},
+
+
+    fire: function () {
+        this.fire = game.add.sprite(this.plane.x, this.plane.y, "fire");
+        game.physics.arcade.enable(this.fire);
+        this.fire.body.gravity.y = -1800;
+    },
+
+    missile: function () {
+        this.missile = game.add.sprite(this.plane.x, this.plane.y, "missile");
+        game.physics.arcade.enable(this.missile);
+        this.missile.body.gravity.y = -3800;
+    },
+    collision: function (x,y) {
+        let cloud = game.add.sprite(x,y,"cloud");
+        game.physics.arcade.enable(cloud);
+        cloud.body.gravity.y=-2000;
         
     }
 }
+
 
 
 // Initialize Phaser, and create a 400px (width) by 490px (height) game
