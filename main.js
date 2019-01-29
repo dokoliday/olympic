@@ -19,8 +19,7 @@ const mainState = {
 
         this.clouds = game.add.group();
 
-        // game.add.image(0, 0, `fond`);
-        this.fond = game.add.tileSprite(0, 0, 800, 890, "fond");
+    this.fond = game.add.tileSprite(0, 0, 800, 890, "fond");
 
         // Display the plane at the position x=100 and y=245
         this.plane = game.add.sprite(100, 245, "plane");
@@ -50,8 +49,16 @@ const mainState = {
         // This function is called 60 times per second
         // It contains the game's logic
 
+
         this.fond.tilePosition.y += 2;
-    },
+
+    // add a window to limit the movements of the aircraft in the size of the game screen
+    if (this.plane.y < 0) this.plane.y = 0;
+    if (this.plane.y > 840) this.plane.y = 840;
+    if (this.plane.x < 0) this.plane.x = 0;
+    if (this.plane.x > 750) this.plane.x = 750;
+  },
+
 
     go: function () {
         // if (this.plane.alive == false) return
