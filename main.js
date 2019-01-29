@@ -6,7 +6,7 @@ const mainState = {
     },
     preload: function () {
         game.load.image("plane", "assets/plane.png");
-        game.load.image("cloud", "assets/cloud.png");
+        game.load.image("cloud", "assets/abdou.png");
         game.load.image("fond", "assets/fond.jpg");
         game.load.image("fire", "assets/fire.png");
         game.load.image("missile", "assets/missile.png")
@@ -54,6 +54,7 @@ const mainState = {
 
         this.sky = game.add.group();
         this.bullet=game.add.group();
+        
 
     },
 
@@ -72,6 +73,8 @@ const mainState = {
 
         game.physics.arcade.overlap(
             this.bullet, this.sky, this.collision, null, this);
+            game.physics.arcade.overlap(
+                this.plane, this.sky, this.collisionPlane, null, this);
     },
 
 
@@ -147,7 +150,17 @@ const mainState = {
         // game.physics.arcade.enable(cloud);
         // cloud.body.gravity.y=-2000;
         fire.kill();
-        cloud.kill(); 
+        cloud.kill();
+        
+    },
+    collisionPlane: function (plane,cloud) {
+        // let cloud = game.add.sprite(x,y,"cloud");
+        // game.physics.arcade.enable(cloud);
+        // cloud.body.gravity.y=-2000;
+        plane.kill();
+        cloud.kill();
+        game.state.start("main");
+        
     }
 }
 
