@@ -52,7 +52,7 @@ const mainState = {
         // spaceKey.onDown.add(this.go, this);
         // const spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         // spaceKey.onDown.add(this.go, this);
-         this.timer = game.time.events.loop(5500, this.addOnePipe, this);
+         this.timer = game.time.events.loop(2500, this.addOnePipe, this);
     },
 
 
@@ -84,11 +84,14 @@ const mainState = {
         // Add a vertical velocity to the plane
         this.plane.body.velocity.x = -350;
     },
-
-  
-
     addOnePipe: function (x, y) {
+        let hole = Math.floor(Math.random() * 750)
         console.log("tutu");
+        this.cloud = game.add.sprite(hole,0, "cloud");
+        this.cloud2 = game.add.sprite(120,0, "cloud");
+        game.physics.arcade.enable([this.cloud,this.cloud2]);
+        this.cloud.body.gravity.y=200;
+        this.cloud2.body.gravity.y=100;
     }}
 
 // Initialize Phaser, and create a 400px (width) by 490px (height) game
