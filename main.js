@@ -20,7 +20,6 @@ const mainState = {
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
 
-
         this.fond = game.add.tileSprite(0, 0, 800, 890, "fond");
 
         // Display the plane at the position x=100 and y=245
