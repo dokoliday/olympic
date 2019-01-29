@@ -53,6 +53,7 @@ const mainState = {
         this.timer = game.time.events.loop(1500, this.addOnSky, this);
 
         this.sky = game.add.group();
+        this.bullet=game.add.group();
 
     },
 
@@ -70,7 +71,7 @@ const mainState = {
         if (this.plane.x > 750) this.plane.x = 750;
 
         game.physics.arcade.overlap(
-            this.fire, this.sky, this.collision, null, this);
+            this.bullet, this.sky, this.collision, null, this);
     },
 
 
@@ -128,9 +129,12 @@ const mainState = {
 
 
     fire: function () {
-        this.fire = game.add.sprite(this.plane.x, this.plane.y, "fire");
-        game.physics.arcade.enable(this.fire);
-        this.fire.body.gravity.y = -1800;
+        let fire = game.add.sprite(this.plane.x, this.plane.y, "fire");
+        this.bullet.add(fire)
+        game.physics.arcade.enable(fire);
+        fire.body.gravity.y = -1800;
+        fire.checkWorldBounds = true;
+        fire.outOfBoundsKill = true;
     },
 
     missile: function () {
@@ -138,11 +142,12 @@ const mainState = {
         game.physics.arcade.enable(this.missile);
         this.missile.body.gravity.y = -3800;
     },
-    collision: function (x,y) {
-        let cloud = game.add.sprite(x,y,"cloud");
-        game.physics.arcade.enable(cloud);
-        cloud.body.gravity.y=-2000;
-        
+    collision: function (fire,cloud) {
+        // let cloud = game.add.sprite(x,y,"cloud");
+        // game.physics.arcade.enable(cloud);
+        // cloud.body.gravity.y=-2000;
+        fire.kill();
+        cloud.kill(); 
     }
 }
 
