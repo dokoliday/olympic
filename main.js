@@ -1,95 +1,91 @@
 const mainState = {
-   
-    preload: function () {
+  init: function() {
+    this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    this.scale.pageAlignHorizontally = true;
+    this.scale.pageAlignVertically = true;
+  },
+  preload: function() {
+    game.load.image("plane", "assets/plane.png");
+    game.load.image("cloud", "assets/cloud.png");
+    game.load.image("fond", "assets/fond.jpg");
+    // This function is called after the preload function
+    // Here we set up the game, display sprites, etc.
 
+    // Change the background color of the game to blue
+  },
+  create: function() {
+    // Set the physics system
+    game.physics.startSystem(Phaser.Physics.ARCADE);
 
-        game.load.image("plane", "assets/plane.png");
-        game.load.image("cloud", "assets/cloud.png");
-        game.load.image("fond", "assets/fond.jpg");
-        // This function is called after the preload function
-        // Here we set up the game, display sprites, etc.
+    this.clouds = game.add.group();
 
-        // Change the background color of the game to blue
+    // game.add.image(0, 0, `fond`);
+    this.fond = game.add.tileSprite(0, 0, 800, 890, "fond");
 
-    },
-    create: function () {
+    // Display the plane at the position x=100 and y=245
+    this.plane = game.add.sprite(100, 245, "plane");
 
-        // Set the physics system
-        game.physics.startSystem(Phaser.Physics.ARCADE);
+    // Add physics to the plane
+    // Needed for: movements, gravity, collisions, etc.
+    game.physics.arcade.enable(this.plane);
 
+    this.plane.body.gravity.y = 10;
 
-         this.clouds = game.add.group();
+    const upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+    upKey.onDown.add(this.go, this);
 
-         game.add.image(0, 0, `fond`);
+    const downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+    downKey.onDown.add(this.down, this);
 
-        // Display the plane at the position x=100 and y=245
-        this.plane = game.add.sprite(100, 245, "plane");
+    const right = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+    right.onDown.add(this.right, this);
 
-        // Add physics to the plane
-        // Needed for: movements, gravity, collisions, etc.
-        game.physics.arcade.enable(this.plane);
+    const left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+    left.onDown.add(this.left, this);
 
-        this.plane.body.gravity.y = 10;
+    this.timer = game.time.events.loop(5500, this.addOnePipe, this);
+  },
 
-        const upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
-        upKey.onDown.add(this.go, this);
+  update: function() {
+    // This function is called 60 times per second
+    // It contains the game's logic
 
+    this.fond.tilePosition.y += 2;
+  },
 
-        const downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
-        downKey.onDown.add(this.down, this);
+  go: function() {
+    // if (this.plane.alive == false) return
 
+    // Add a vertical velocity to the plane
+    this.plane.body.velocity.y = -150;
+    this.plane.body.velocity.x = 0;
+  },
 
-        const right = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-        right.onDown.add(this.right, this);
+  down: function() {
+    // if (this.plane.alive == false) return;
 
+    // Add a vertical velocity to the plane
+    this.plane.body.velocity.y = 150;
+    this.plane.body.velocity.x = 0;
+  },
 
-        const left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
-        left.onDown.add(this.left, this);
+  right: function() {
+    // if (this.plane.alive == false) return;
 
-        // const spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        // spaceKey.onDown.add(this.go, this);
-        // const spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        // spaceKey.onDown.add(this.go, this);
-        // const spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        // spaceKey.onDown.add(this.go, this);
-         this.timer = game.time.events.loop(5500, this.addOnePipe, this);
-    },
+    // Add a vertical velocity to the plane
+    this.plane.body.velocity.x = 350;
+  },
+  left: function() {
+    // if (this.plane.alive == false) return;
 
+    // Add a vertical velocity to the plane
+    this.plane.body.velocity.x = -350;
+  },
 
-    go: function () {
-        // if (this.plane.alive == false) return
-
-        // Add a vertical velocity to the plane
-        this.plane.body.velocity.y = -150;
-        this.plane.body.velocity.x = 0;
-    },
-
-    down: function () {
-        // if (this.plane.alive == false) return;
-
-        // Add a vertical velocity to the plane
-        this.plane.body.velocity.y = 150;
-        this.plane.body.velocity.x = 0;
-    },
-
-    right: function () {
-        // if (this.plane.alive == false) return;
-
-        // Add a vertical velocity to the plane
-        this.plane.body.velocity.x = 350;
-    },
-    left: function () {
-        // if (this.plane.alive == false) return;
-
-        // Add a vertical velocity to the plane
-        this.plane.body.velocity.x = -350;
-    },
-
-  
-
-    addOnePipe: function (x, y) {
-        console.log("tutu");
-    }}
+  addOnePipe: function(x, y) {
+    console.log("tutu");
+  }
+};
 
 // Initialize Phaser, and create a 400px (width) by 490px (height) game
 var game = new Phaser.Game(800, 890);
@@ -98,5 +94,4 @@ var game = new Phaser.Game(800, 890);
 game.state.add("main", mainState);
 
 // Start the state to actually start the game
-game.state.start("main")
-
+game.state.start("main");
