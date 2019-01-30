@@ -5,11 +5,16 @@ const mainState = {
         this.scale.pageAlignVertically = true;
     },
     preload: function () {
-        game.load.image("plane", "assets/plane.png");
+        game.load.image("plan", "assets/plane.png");
         game.load.image("cloud", "assets/abdou.png");
         game.load.image("fond", "assets/fond.jpg");
         game.load.image("fire", "assets/fire.png");
-        game.load.image("missile", "assets/missile.png")
+        game.load.image("missile", "assets/missile.png");
+        game.load.image("galaxie", "assets/galaxie.jpg");
+        game.load.image("sheep", "assets/sheep.png");
+        game.load.image("meteorite", "assets/meteorite.png");
+        game.load.image("again","assets/again.jpeg")
+
         // This function is called after the preload function
         // Here we set up the game, display sprites, etc.
 
@@ -20,13 +25,12 @@ const mainState = {
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
 
-        this.fond = game.add.tileSprite(0, 0, 800, 890, "fond");
+        this.galaxie = game.add.tileSprite(0, 0, 1000, 1090, "galaxie");
 
         // Display the plane at the position x=100 and y=245
-        this.plane = game.add.sprite(100, 245, "plane");
-
-
-
+        this.plane = game.add.sprite(100, 245, "sheep");
+        this.plane.width = 80;
+        this.plane.height = 80;
         // Add physics to the plane
         // Needed for: movements, gravity, collisions, etc.
         game.physics.arcade.enable(this.plane);
@@ -51,6 +55,9 @@ const mainState = {
         const fire = game.input.keyboard.addKey(Phaser.Keyboard.F);
         fire.onDown.add(this.fire, this);
 
+        const playAgain = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+        playAgain.onUp.add(this.playAgain, this);
+
 
         this.timer = game.time.events.loop(1500, this.addOnSky, this);
 
@@ -66,7 +73,8 @@ const mainState = {
         // It contains the game's logic
 
 
-        this.fond.tilePosition.y += 2;
+        this.galaxie.tilePosition.y += 7;
+
 
         // add a window to limit the movements of the aircraft in the size of the game screen
         if (this.plane.y < 0) this.plane.y = 0;
@@ -119,10 +127,19 @@ const mainState = {
 
 
     addOneCloud: function (x, y) {
-        let cloud = game.add.sprite(x, y, "cloud");
+        // let cloud = game.add.sprite(x, y, "meteorite");
+        // this.sky.add(cloud);
+        // game.physics.arcade.enable(cloud);
+        // cloud.body.gravity.y = x;
+        // cloud.checkWorldBounds = true;
+        // cloud.outOfBoundsKill = true;
+
+        let cloud = game.add.sprite(x, y, "meteorite");
         this.sky.add(cloud);
         game.physics.arcade.enable(cloud);
         cloud.body.gravity.y = x;
+        cloud.width = 80;
+        cloud.height = 80;
         cloud.checkWorldBounds = true;
         cloud.outOfBoundsKill = true;
 
@@ -149,26 +166,27 @@ const mainState = {
 
     missile: function () {
 
-        let missile = game.add.sprite(this.plane.x, this.plane.y, "missile");
-        let missile2 = game.add.sprite(this.plane.x, this.plane.y, "missile");
+        for (let i = 0; i < 2; i++) {
+            let missile = game.add.sprite(this.plane.x, this.plane.y, "missile");
+            this.army.add(missile)
+            game.physics.arcade.enable(missile);
+            if (i % 2 === 0) {
 
-        this.army.add(missile)
-        this.army.add(missile2)
-        game.physics.arcade.enable(missile);
-        game.physics.arcade.enable(missile2);
+                missile.body.gravity.y = -1800;
+                missile.body.gravity.x = 800;
 
-        missile.body.gravity.y = -1800;
-        missile.body.gravity.x = 800;
-        missile2.body.gravity.y = -1800;
-        missile2.body.gravity.x = -800;
-        missile.checkWorldBounds = true;
-        missile.outOfBoundsKill = true;
-        missile2.checkWorldBounds = true;
-        missile2.outOfBoundsKill = true;
+            } else {
+                missile.body.gravity.y = -1800;
+                missile.body.gravity.x = -800;
+            }
+
+            missile.checkWorldBounds = true;
+            missile.outOfBoundsKill = true;
 
 
-
+        }
     },
+
     collision: function (x, y) {
         // let cloud = game.add.sprite(x,y,"cloud");
         // game.physics.arcade.enable(cloud);
@@ -184,11 +202,17 @@ const mainState = {
         // cloud.body.gravity.y=-2000;
         x.kill();
         y.kill();
-        game.state.start("main");
+        game.time.events.remove(this.timer);
+        this.playAgain;
 
     },
-
+    playAgain:function(){
+        game.time.events.remove(this.timer),
+        game.state.start("main");
+    }
 }
+
+
 
 
 
