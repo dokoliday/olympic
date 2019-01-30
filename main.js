@@ -1,9 +1,36 @@
-const mainState = {
+
+
+const Welcome = {
     init: function () {
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.scale.pageAlignHorizontally = true;
         this.scale.pageAlignVertically = true;
     },
+
+    preload: function () {
+        game.load.image("first", "assets/FirstPage.jpeg");
+        game.load.spritesheet("startbutton", "assets/startbutton.png");
+
+    },
+
+    create: function () {
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+        first = game.add.tileSprite(0, 0, 1000, 1090, "first");
+        
+        startbutton = game.add.button(game.world.centerX - 95, 750, 'startbutton', this.playfunction, this, 2, 1, 0);
+    },
+        // this.startbutton.add(this.play, this);
+    
+    playfunction: function () {
+        
+        game.state.start("startingame");
+
+    }
+
+}
+const startingame = {
+
+
     preload: function () {
         game.load.image("plan", "assets/plane.png");
         game.load.image("cloud", "assets/abdou.png");
@@ -13,9 +40,15 @@ const mainState = {
         game.load.image("galaxie", "assets/galaxie.jpg");
         game.load.image("sheep", "assets/sheep.png");
         game.load.image("meteorite", "assets/meteorite.png");
-        game.load.image("again","assets/again.jpeg");
-        game.load.audio("theme","assets/musics/olympic-back.wav");
-        game.load.audio("firesong","assets/musics/olympic-shoot.wav");
+        game.load.image("again", "assets/again.jpeg");
+
+        game.load.audio("theme", "assets/musics/olympic-back.wav");
+        game.load.audio("firesong", "assets/musics/olympic-shoot.wav");
+        game.load.audio("missileFire", "assets/musics/olympic-fire.wav");
+        game.load.audio("explose", "assets/musics/olympic-explose.wav");
+        game.load.audio("deadSong", "assets/musics/olympic-dead.wav");
+        game.load.audio("gameover", "assets/musics/olympic-gameover.wav");
+
 
 
         // This function is called after the preload function
@@ -26,17 +59,20 @@ const mainState = {
     create: function () {
         // Set the physics system
         game.physics.startSystem(Phaser.Physics.ARCADE);
-        
-        
-        music = game.add.audio('theme');
-        music.play();
 
-        fireSong= game.add.audio('firesong');
+        fireSong = game.add.audio('firesong');
+        missilefire = game.add.audio('missileFire');
+        explose = game.add.audio('explose');
+        deadSong = game.add.audio('deadSong');
+        gameover = game.add.audio('gameover');
+
 
         this.galaxie = game.add.tileSprite(0, 0, 1000, 1090, "galaxie");
 
+        music = game.add.audio('theme');
+        music.play();
         // Display the plane at the position x=100 and y=245
-        this.plane = game.add.sprite(100, 245, "sheep");
+        this.plane = game.add.sprite(300, 500, "sheep");
         this.plane.width = 80;
         this.plane.height = 80;
         // Add physics to the plane
@@ -77,19 +113,23 @@ const mainState = {
     },
 
     update: function () {
-        // This function is called 60 times per second
-        // It contains the game's logic
+
+        if (this.plane.alive === false) {
+            return;
+        } else {
+            // This function is called 60 times per second
+            // It contains the game's logic
 
 
-        this.galaxie.tilePosition.y += 17;
+            this.galaxie.tilePosition.y += 31;
 
 
-        // add a window to limit the movements of the aircraft in the size of the game screen
-        if (this.plane.y < 0) this.plane.y = 0;
-        if (this.plane.y > 840) this.plane.y = 840;
-        if (this.plane.x < 0) this.plane.x = 0;
-        if (this.plane.x > 750) this.plane.x = 750;
-
+            // add a window to limit the movements of the aircraft in the size of the game screen
+            if (this.plane.y < 0) this.plane.y = 0;
+            if (this.plane.y > 840) this.plane.y = 840;
+            if (this.plane.x < 0) this.plane.x = 0;
+            if (this.plane.x > 750) this.plane.x = 750;
+        }
         game.physics.arcade.overlap(
             this.bullet, this.sky, this.collision, null, this);
         game.physics.arcade.overlap(
@@ -141,19 +181,23 @@ const mainState = {
         // cloud.body.gravity.y = x;
         // cloud.checkWorldBounds = true;
         // cloud.outOfBoundsKill = true;
+        if (this.plane.alive === false) {
+            return;
+        } else {
+            let cloud = game.add.sprite(x, y, "meteorite");
+            this.sky.add(cloud);
+            game.physics.arcade.enable(cloud);
+            cloud.body.gravity.y = x;
+            cloud.width = 80;
+            cloud.height = 80;
+            cloud.checkWorldBounds = true;
+            cloud.outOfBoundsKill = true;
 
-        let cloud = game.add.sprite(x, y, "meteorite");
-        this.sky.add(cloud);
-        game.physics.arcade.enable(cloud);
-        cloud.body.gravity.y = x;
-        cloud.width = 80;
-        cloud.height = 80;
-        cloud.checkWorldBounds = true;
-        cloud.outOfBoundsKill = true;
-
+        }
     },
 
     addOnSky: function () {
+
 
         for (var i = 0; i < 6; i++) {
             var hole = Math.floor(Math.random() * 750);
@@ -161,7 +205,6 @@ const mainState = {
 
         }
     },
-
 
     fire: function () {
         let fire = game.add.sprite(this.plane.x, this.plane.y, "fire");
@@ -189,6 +232,7 @@ const mainState = {
                 missile.body.gravity.x = -800;
             }
 
+            missilefire.play();
             missile.checkWorldBounds = true;
             missile.outOfBoundsKill = true;
 
@@ -204,6 +248,7 @@ const mainState = {
         y.kill();
 
 
+
     },
     collisionPlane: function (x, y) {
         // let cloud = game.add.sprite(x,y,"cloud");
@@ -211,13 +256,14 @@ const mainState = {
         // cloud.body.gravity.y=-2000;
         x.kill();
         y.kill();
-        game.time.events.remove(this.timer);
+        this.plane.alive = false;
         this.playAgain;
 
     },
-    playAgain:function(){
-        game.time.events.remove(this.timer),
-        game.state.start("main");
+    playAgain: function () {
+
+        game.state.start("startingame");
+
     }
 }
 
@@ -229,7 +275,8 @@ const mainState = {
 var game = new Phaser.Game(800, 890);
 
 // Add the 'mainState' and call it 'main'
-game.state.add("main", mainState);
+game.state.add("startingame", startingame);
+game.state.add("welcome", Welcome);
 
 // Start the state to actually start the game
-game.state.start("main");
+game.state.start("welcome");
