@@ -25,6 +25,8 @@ const mainState = {
         // Display the plane at the position x=100 and y=245
         this.plane = game.add.sprite(100, 245, "plane");
 
+
+
         // Add physics to the plane
         // Needed for: movements, gravity, collisions, etc.
         game.physics.arcade.enable(this.plane);
@@ -53,8 +55,9 @@ const mainState = {
         this.timer = game.time.events.loop(1500, this.addOnSky, this);
 
         this.sky = game.add.group();
-        this.bullet=game.add.group();
-        
+        this.bullet = game.add.group();
+        this.army = game.add.group();
+
 
     },
 
@@ -73,8 +76,11 @@ const mainState = {
 
         game.physics.arcade.overlap(
             this.bullet, this.sky, this.collision, null, this);
-            game.physics.arcade.overlap(
-                this.plane, this.sky, this.collisionPlane, null, this);
+        game.physics.arcade.overlap(
+            this.plane, this.sky, this.collisionPlane, null, this);
+        game.physics.arcade.overlap(
+            this.army, this.sky, this.collision, null, this);
+
     },
 
 
@@ -112,56 +118,76 @@ const mainState = {
     },
 
 
-    addOneCloud: function (x,y) {
-            let cloud = game.add.sprite(x, y, "cloud");
-            this.sky.add(cloud);
-            game.physics.arcade.enable(cloud);
-            cloud.body.gravity.y = x;
-            cloud.checkWorldBounds = true;
-            cloud.outOfBoundsKill = true;
-        
+    addOneCloud: function (x, y) {
+        let cloud = game.add.sprite(x, y, "cloud");
+        this.sky.add(cloud);
+        game.physics.arcade.enable(cloud);
+        cloud.body.gravity.y = x;
+        cloud.checkWorldBounds = true;
+        cloud.outOfBoundsKill = true;
+
     },
 
-    addOnSky:function(){
-        
+    addOnSky: function () {
+
         for (var i = 0; i < 6; i++) {
             var hole = Math.floor(Math.random() * 750);
-            this.addOneCloud(hole,0);
-            
-    }},
+            this.addOneCloud(hole, 0);
+
+        }
+    },
 
 
     fire: function () {
         let fire = game.add.sprite(this.plane.x, this.plane.y, "fire");
         this.bullet.add(fire)
         game.physics.arcade.enable(fire);
-        fire.body.gravity.y = -1800;
+        fire.body.gravity.y = -1300;
         fire.checkWorldBounds = true;
         fire.outOfBoundsKill = true;
     },
 
     missile: function () {
-        this.missile = game.add.sprite(this.plane.x, this.plane.y, "missile");
-        game.physics.arcade.enable(this.missile);
-        this.missile.body.gravity.y = -3800;
+
+        let missile = game.add.sprite(this.plane.x, this.plane.y, "missile");
+        let missile2 = game.add.sprite(this.plane.x, this.plane.y, "missile");
+
+        this.army.add(missile)
+        this.army.add(missile2)
+        game.physics.arcade.enable(missile);
+        game.physics.arcade.enable(missile2);
+
+        missile.body.gravity.y = -1800;
+        missile.body.gravity.x = 800;
+        missile2.body.gravity.y = -1800;
+        missile2.body.gravity.x = -800;
+        missile.checkWorldBounds = true;
+        missile.outOfBoundsKill = true;
+        missile2.checkWorldBounds = true;
+        missile2.outOfBoundsKill = true;
+
+
+
     },
-    collision: function (fire,cloud) {
+    collision: function (x, y) {
         // let cloud = game.add.sprite(x,y,"cloud");
         // game.physics.arcade.enable(cloud);
         // cloud.body.gravity.y=-2000;
-        fire.kill();
-        cloud.kill();
-        
+        x.kill();
+        y.kill();
+
+
     },
-    collisionPlane: function (plane,cloud) {
+    collisionPlane: function (x, y) {
         // let cloud = game.add.sprite(x,y,"cloud");
         // game.physics.arcade.enable(cloud);
         // cloud.body.gravity.y=-2000;
-        plane.kill();
-        cloud.kill();
+        x.kill();
+        y.kill();
         game.state.start("main");
-        
-    }
+
+    },
+
 }
 
 
