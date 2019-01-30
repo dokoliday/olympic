@@ -13,7 +13,10 @@ const mainState = {
         game.load.image("galaxie", "assets/galaxie.jpg");
         game.load.image("sheep", "assets/sheep.png");
         game.load.image("meteorite", "assets/meteorite.png");
-        game.load.image("again","assets/again.jpeg")
+        game.load.image("again","assets/again.jpeg");
+        game.load.audio("theme","assets/musics/olympic-back.wav");
+        game.load.audio("firesong","assets/musics/olympic-shoot.wav");
+
 
         // This function is called after the preload function
         // Here we set up the game, display sprites, etc.
@@ -23,7 +26,12 @@ const mainState = {
     create: function () {
         // Set the physics system
         game.physics.startSystem(Phaser.Physics.ARCADE);
+        
+        
+        music = game.add.audio('theme');
+        music.play();
 
+        fireSong= game.add.audio('firesong');
 
         this.galaxie = game.add.tileSprite(0, 0, 1000, 1090, "galaxie");
 
@@ -73,7 +81,7 @@ const mainState = {
         // It contains the game's logic
 
 
-        this.galaxie.tilePosition.y += 7;
+        this.galaxie.tilePosition.y += 17;
 
 
         // add a window to limit the movements of the aircraft in the size of the game screen
@@ -158,6 +166,7 @@ const mainState = {
     fire: function () {
         let fire = game.add.sprite(this.plane.x, this.plane.y, "fire");
         this.bullet.add(fire)
+        fireSong.play();
         game.physics.arcade.enable(fire);
         fire.body.gravity.y = -1300;
         fire.checkWorldBounds = true;
