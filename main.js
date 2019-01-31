@@ -16,13 +16,12 @@ const Welcome = {
     create: function () {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         first = game.add.tileSprite(0, 0, 1000, 1090, "first");
-        
         startbutton = game.add.button(game.world.centerX - 95, 750, 'startbutton', this.playfunction, this, 2, 1, 0);
     },
-        // this.startbutton.add(this.play, this);
-    
+    // this.startbutton.add(this.play, this);
+
     playfunction: function () {
-        
+
         game.state.start("startingame");
 
     }
@@ -40,9 +39,9 @@ const startingame = {
         game.load.image("galaxie", "assets/galaxie.jpg");
         game.load.image("sheep", "assets/sheep.png");
         game.load.image("meteorite", "assets/meteorite.png");
-        game.load.image("again", "assets/again.jpeg");
+        game.load.image("again", "assets/again.png");
 
-        game.load.audio("theme", "assets/musics/olympic-back.wav");
+        game.load.audio("theme", "assets/musics/olympic-bac.wav");
         game.load.audio("firesong", "assets/musics/olympic-shoot.wav");
         game.load.audio("missileFire", "assets/musics/olympic-fire.wav");
         game.load.audio("explose", "assets/musics/olympic-explose.wav");
@@ -105,10 +104,10 @@ const startingame = {
 
         this.timer = game.time.events.loop(1500, this.addOnSky, this);
 
+
         this.sky = game.add.group();
         this.bullet = game.add.group();
         this.army = game.add.group();
-
 
     },
 
@@ -120,10 +119,7 @@ const startingame = {
             // This function is called 60 times per second
             // It contains the game's logic
 
-
-            this.galaxie.tilePosition.y += 31;
-
-
+            this.galaxie.tilePosition.y += 8;
             // add a window to limit the movements of the aircraft in the size of the game screen
             if (this.plane.y < 0) this.plane.y = 0;
             if (this.plane.y > 840) this.plane.y = 840;
@@ -138,10 +134,6 @@ const startingame = {
             this.army, this.sky, this.collision, null, this);
 
     },
-
-
-
-
     go: function () {
         // if (this.plane.alive == false) return
 
@@ -207,36 +199,43 @@ const startingame = {
     },
 
     fire: function () {
-        let fire = game.add.sprite(this.plane.x, this.plane.y, "fire");
-        this.bullet.add(fire)
-        fireSong.play();
-        game.physics.arcade.enable(fire);
-        fire.body.gravity.y = -1300;
-        fire.checkWorldBounds = true;
-        fire.outOfBoundsKill = true;
+        if (this.plane.alive === false) {
+            return;
+        } else {
+            let fire = game.add.sprite(this.plane.x, this.plane.y, "fire");
+            this.bullet.add(fire)
+            fireSong.play();
+            game.physics.arcade.enable(fire);
+            fire.body.gravity.y = -1300;
+            fire.checkWorldBounds = true;
+            fire.outOfBoundsKill = true;
+        }
     },
 
     missile: function () {
+        if (this.plane.alive === false) {
+            return;
+        } else {
+            for (let i = 0; i < 2; i++) {
+                let missile = game.add.sprite(this.plane.x, this.plane.y, "missile");
+                this.army.add(missile)
+                game.physics.arcade.enable(missile);
+                if (i % 2 === 0) {
 
-        for (let i = 0; i < 2; i++) {
-            let missile = game.add.sprite(this.plane.x, this.plane.y, "missile");
-            this.army.add(missile)
-            game.physics.arcade.enable(missile);
-            if (i % 2 === 0) {
+                    missile.body.gravity.y = -1800;
+                    missile.body.gravity.x = 800;
 
-                missile.body.gravity.y = -1800;
-                missile.body.gravity.x = 800;
+                } else {
+                    missile.body.gravity.y = -1800;
+                    missile.body.gravity.x = -800;
+                }
 
-            } else {
-                missile.body.gravity.y = -1800;
-                missile.body.gravity.x = -800;
+                missilefire.play();
+                missile.checkWorldBounds = true;
+                missile.outOfBoundsKill = true;
+
+
             }
-
-            missilefire.play();
-            missile.checkWorldBounds = true;
-            missile.outOfBoundsKill = true;
-
-
         }
     },
 
@@ -257,6 +256,8 @@ const startingame = {
         x.kill();
         y.kill();
         this.plane.alive = false;
+        this.again = game.add.sprite(80,300, "again");
+        this.galaxie.tilePosition.y += 1;
         this.playAgain;
 
     },
