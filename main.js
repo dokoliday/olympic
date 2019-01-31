@@ -41,7 +41,7 @@ const startingame = {
         game.load.image("meteorite", "assets/meteorite.png");
         game.load.image("again", "assets/again.png");
 
-        game.load.audio("theme", "assets/musics/olympic-bac.wav");
+        game.load.audio("theme", "assets/musics/olympic-back.wav");
         game.load.audio("firesong", "assets/musics/olympic-shoot.wav");
         game.load.audio("missileFire", "assets/musics/olympic-fire.wav");
         game.load.audio("explose", "assets/musics/olympic-explose.wav");
@@ -74,48 +74,43 @@ const startingame = {
         this.plane = game.add.sprite(300, 500, "sheep");
         this.plane.width = 80;
         this.plane.height = 80;
+        this.score = 0;
+        this.life = 3;
         // Add physics to the plane
         // Needed for: movements, gravity, collisions, etc.
         game.physics.arcade.enable(this.plane);
-
         this.plane.body.gravity.y = 10;
-
         const upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
         upKey.onDown.add(this.go, this);
-
         const downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
         downKey.onDown.add(this.down, this);
-
         const right = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         right.onDown.add(this.right, this);
-
         const left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         left.onDown.add(this.left, this);
-
         const missile = game.input.keyboard.addKey(Phaser.Keyboard.R);
         missile.onDown.add(this.missile, this);
-
         const fire = game.input.keyboard.addKey(Phaser.Keyboard.F);
         fire.onDown.add(this.fire, this);
-
         const playAgain = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         playAgain.onUp.add(this.playAgain, this);
 
+        this.scoreText = game.add.text(280, 800, 'score: 0', { fontSize: '42px', fill: '#27F50F' });
+        this.lifeText = game.add.text(580, 800, 'life: 3', { fontSize: '42px', fill: '#F50FCF' });
 
         this.timer = game.time.events.loop(1500, this.addOnSky, this);
-
-
+        this.totalscore = game.time.events.loop(250, this.Point, this);
+        this.addLife =game.time.events.loop(11500,this.addLife,this);
         this.sky = game.add.group();
         this.bullet = game.add.group();
         this.army = game.add.group();
 
+
+
     },
 
     update: function () {
-
-        if (this.plane.alive === false) {
-            return;
-        } else {
+        if (this.life != 0) {
             // This function is called 60 times per second
             // It contains the game's logic
 
@@ -134,57 +129,81 @@ const startingame = {
             this.army, this.sky, this.collision, null, this);
 
     },
+    Point: function () {
+
+        // Removes the star from the screen
+
+
+        //  Add and update the score
+        if (this.life != 0) {
+            this.score += 1;
+            this.scoreText.text = 'Score: ' + this.score;
+        }
+
+    },
+
+    LifePoint: function (n) {
+
+        if (this.life != 0) {
+            this.life -= n;
+            this.lifeText.text = 'life: ' + this.life;
+
+
+        }
+    },
+
+
     go: function () {
-        // if (this.plane.alive == false) return
+        // if (this.plane.alive == false) this.dead
 
         // Add a vertical velocity to the plane
-        this.plane.body.velocity.y = -150;
+        this.plane.body.velocity.y = -200;
         this.plane.body.velocity.x = 0;
     },
 
     down: function () {
-        // if (this.plane.alive == false) return;
+        // if (this.plane.alive == false) this.dead;
 
         // Add a vertical velocity to the plane
-        this.plane.body.velocity.y = 150;
+        this.plane.body.velocity.y = 300;
         this.plane.body.velocity.x = 0;
     },
 
     right: function () {
-        // if (this.plane.alive == false) return;
+        // if (this.plane.alive == false) this.dead;
 
 
         // Add a vertical velocity to the plane
-        this.plane.body.velocity.x = 350;
+        this.plane.body.velocity.x = 300;
+
     },
     left: function () {
-        // if (this.plane.alive == false) return;
+        // if (this.plane.alive == false) this.dead;
 
 
         // Add a vertical velocity to the plane
-        this.plane.body.velocity.x = -350;
+        this.plane.body.velocity.x = -300;
+    },
+
+    addLife: function(){
+        if(this.life!=0)
+        this.life+=1;
+        this.lifeText.text = 'life: ' + this.life;
+
     },
 
 
     addOneCloud: function (x, y) {
-        // let cloud = game.add.sprite(x, y, "meteorite");
-        // this.sky.add(cloud);
-        // game.physics.arcade.enable(cloud);
-        // cloud.body.gravity.y = x;
-        // cloud.checkWorldBounds = true;
-        // cloud.outOfBoundsKill = true;
-        if (this.plane.alive === false) {
-            return;
-        } else {
+        if (this.life != 0) {
+
             let cloud = game.add.sprite(x, y, "meteorite");
             this.sky.add(cloud);
             game.physics.arcade.enable(cloud);
-            cloud.body.gravity.y = x;
+            cloud.body.gravity.y = x - 50;
             cloud.width = 80;
             cloud.height = 80;
             cloud.checkWorldBounds = true;
             cloud.outOfBoundsKill = true;
-
         }
     },
 
@@ -199,79 +218,67 @@ const startingame = {
     },
 
     fire: function () {
-        if (this.plane.alive === false) {
-            return;
-        } else {
+        if (this.life != 0) {
             let fire = game.add.sprite(this.plane.x, this.plane.y, "fire");
             this.bullet.add(fire)
             fireSong.play();
             game.physics.arcade.enable(fire);
-            fire.body.gravity.y = -1300;
+            fire.body.gravity.y = -420;
             fire.checkWorldBounds = true;
             fire.outOfBoundsKill = true;
         }
     },
 
     missile: function () {
-        if (this.plane.alive === false) {
-            return;
-        } else {
-            for (let i = 0; i < 2; i++) {
+        if (this.life != 0) {
+            for (let i = 0; i <= 6; i++) {
                 let missile = game.add.sprite(this.plane.x, this.plane.y, "missile");
                 this.army.add(missile)
                 game.physics.arcade.enable(missile);
-                if (i % 2 === 0) {
+                if (i % 2 != 0) {
 
-                    missile.body.gravity.y = -1800;
-                    missile.body.gravity.x = 800;
+                    missile.body.gravity.y = 20;
+                    missile.body.gravity.x = 80;
 
                 } else {
-                    missile.body.gravity.y = -1800;
-                    missile.body.gravity.x = -800;
+                    missile.body.gravity.y = 20;
+                    missile.body.gravity.x = -80;
                 }
 
                 missilefire.play();
                 missile.checkWorldBounds = true;
                 missile.outOfBoundsKill = true;
 
-
             }
         }
     },
 
     collision: function (x, y) {
-        // let cloud = game.add.sprite(x,y,"cloud");
-        // game.physics.arcade.enable(cloud);
-        // cloud.body.gravity.y=-2000;
         x.kill();
         y.kill();
-
-
-
     },
     collisionPlane: function (x, y) {
-        // let cloud = game.add.sprite(x,y,"cloud");
-        // game.physics.arcade.enable(cloud);
-        // cloud.body.gravity.y=-2000;
-        x.kill();
-        y.kill();
-        this.plane.alive = false;
-        this.again = game.add.sprite(80,300, "again");
-        this.galaxie.tilePosition.y += 1;
-        this.playAgain;
+        if (this.life > 1) {
+            y.kill();
+        } if (this.life > 0) {
+            this.LifePoint(1);
+        } else {
+            x.kill();
+            y.kill();
+            this.again = game.add.sprite(80, 100, "again");
+            music.destroy();
+            deadSong.play();
+            gameover.play();
 
+
+        }
     },
-    playAgain: function () {
 
+    playAgain: function () {
         game.state.start("startingame");
 
     }
 }
-
-
-
-
-
 // Initialize Phaser, and create a 400px (width) by 490px (height) game
 var game = new Phaser.Game(800, 890);
 
