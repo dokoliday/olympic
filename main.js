@@ -74,8 +74,8 @@ const startingame = {
         // general background and musical theme
 
         this.galaxie = game.add.tileSprite(0, 0, 1000, 1090, "galaxie");
-        music.play();
-
+        
+        music.play('', 0, 1, true);
         // creating the principal avatar gamer
         //IMPORTANT!!! this two following lines must be rigth in this order and before add the avatar skills
         this.plane = game.add.sprite(300, 500, "sheep");
@@ -119,23 +119,24 @@ const startingame = {
 
         // define the events
         // millisecond;callback;environeent
-        this.timer = game.time.events.loop(1500, this.addOnSky, this);
+        this.timer = game.time.events.loop(1500, this.addOngroupOfMeteorites, this);
         this.totalscore = game.time.events.loop(250, this.point, this);
         this.addLife = game.time.events.loop(11500, this.addLife, this);
-        this.bulletTimer = game.time.events.loop(15500, this.addCaisseFireOnSky, this);
+        this.bulletTimer = game.time.events.loop(15500, this.addCaisseFireOngroupOfMeteorites, this);
+        this.missileTimer = game.time.events.loop(19800, this.addCaisseMissileOngroupOfMeteorites, this);
 
         // define groups
-        this.sky = game.add.group();
-        this.bulletfire = game.add.group();
-        this.army = game.add.group();
-        this.space = game.add.group();
-
+        this.groupOfMeteorites = game.add.group();
+        this.groupOfBullet = game.add.group();
+        this.groupOfMissiles = game.add.group();
+        this.goupOfBulletBox = game.add.group();
+        this.groupOfmissilebox = game.add.group();
     },
 
     update: function () {
         if (this.life != 0) {
             //scrolling the background
-            this.galaxie.tilePosition.y += 11;
+            this.galaxie.tilePosition.y += this.score/10;
             // add a window to limit the movements of the aircraft in the size of the game screen
             if (this.plane.y < 0) this.plane.y = 0;
             if (this.plane.y > 800) this.plane.y = 800;
@@ -144,15 +145,15 @@ const startingame = {
         }
         //manage the collisions
         game.physics.arcade.overlap(
-            this.bulletfire, this.sky, this.collision, null, this);
+            this.groupOfBullet, this.groupOfMeteorites, this.collision, null, this);
         game.physics.arcade.overlap(
-            this.plane, this.sky, this.collisionPlane, null, this);
+            this.plane, this.groupOfMeteorites, this.collisionPlane, null, this);
         game.physics.arcade.overlap(
-            this.army, this.sky, this.collision, null, this);
+            this.groupOfMissiles, this.groupOfMeteorites, this.collision, null, this);
         game.physics.arcade.overlap(
-            this.plane, this.space, this.addbullet, null, this);
-
-
+            this.plane, this.goupOfBulletBox, this.addbullet, null, this);
+            game.physics.arcade.overlap(
+                this.plane, this.groupOfmissilebox, this.addmissile, null, this);
     },
     point: function () {
         //  Add and update the score
@@ -160,7 +161,6 @@ const startingame = {
             this.score += 1;
             this.scoreText.text = 'Score: ' + this.score;
         }
-
     },
 
     Lifepoint: function (n) {
@@ -202,7 +202,7 @@ const startingame = {
         //create clouds
         if (this.life != 0) {
             let cloud = game.add.sprite(x, y, "meteorite");
-            this.sky.add(cloud);
+            this.groupOfMeteorites.add(cloud);
             game.physics.arcade.enable(cloud);
             cloud.body.gravity.y = x - 50;
             cloud.width = 80;
@@ -212,7 +212,7 @@ const startingame = {
         }
     },
 
-    addOnSky: function () {
+    addOngroupOfMeteorites: function () {
         //add clouds on the group and make the creation random
         for (var i = 0; i < 6; i++) {
             var hole = Math.floor(Math.random() * 750);
@@ -225,10 +225,10 @@ const startingame = {
             //creating the fire balle from the plane
 
             let fire = game.add.sprite(this.plane.x, this.plane.y, "fire");
-            this.bulletfire.add(fire)
+            this.groupOfBullet.add(fire)
             fireSong.play();
             game.physics.arcade.enable(fire);
-            fire.body.gravity.y = -420;
+            fire.body.gravity.y = -1120;
             this.bullet -= 1;
             this.bulletText.text = 'Bullets: ' + this.bullet;
         }
@@ -238,7 +238,7 @@ const startingame = {
         //create clouds
         if (this.life != 0) {
             let caisseFire = game.add.sprite(x, y, "caissebullet");
-            this.space.add(caisseFire);
+            this.goupOfBulletBox.add(caisseFire);
             game.physics.arcade.enable(caisseFire);
             caisseFire.body.gravity.y = 160;
             caisseFire.width = 60;
@@ -248,15 +248,16 @@ const startingame = {
         }
     },
 
-    addCaisseFireOnSky: function () {
+    addCaisseFireOngroupOfMeteorites: function () {
         //add clouds on the group and make the creation random
         var hole = Math.floor(Math.random() * 750);
         this.addOneCaisseFire(hole, 0);
     },
 
     addbullet: function (x,y) {
+        //taking bullet boc add 10 bullets
         y.kill();
-        this.bullet += 20;
+        this.bullet += 10;
         this.bulletText.text = 'Bullets: ' + this.bullet;
     },
 
@@ -265,7 +266,7 @@ const startingame = {
         if ((this.caisseMissile != 0) && (this.life != 0)) {
             for (let i = 0; i <= 6; i++) {
                 let missile = game.add.sprite(this.plane.x, this.plane.y, "missile");
-                this.army.add(missile)
+                this.groupOfMissiles.add(missile)
                 game.physics.arcade.enable(missile);
                 if (i % 2 != 0) {
                     missile.body.gravity.y = -470 - 20 * i;
@@ -280,6 +281,32 @@ const startingame = {
             this.missileText.text = 'missiles: ' + this.caisseMissile;
 
         }
+    },
+
+    addOneCaisseMissile: function (x, y) {
+        //create clouds
+        if (this.life != 0) {
+            let caissaddmissile = game.add.sprite(x, y, "caissemissile");
+            this.groupOfmissilebox.add(caissaddmissile);
+            game.physics.arcade.enable(caissaddmissile);
+            caissaddmissile.body.gravity.y = 160;
+            caissaddmissile.width = 60;
+            caissaddmissile.height = 60;
+            caissaddmissile.checkWorldBounds = true;
+            caissaddmissile.outOfBoundsKill = true;
+        }
+    },
+
+    addCaisseMissileOngroupOfMeteorites: function () {
+        //add clouds on the group and make the creation random
+        var hole = Math.floor(Math.random() * 750);
+        this.addOneCaisseMissile(hole, 0);
+    },
+
+    addmissile: function (x,y) {
+        y.kill();
+        this.caisseMissile += 3;
+        this.missileText.text = 'missiles: ' + this.caisseMissile;
     },
 
     collision: function (x, y) {
@@ -309,6 +336,7 @@ const startingame = {
 
     playfunction: function () {
         // this function call the game component to initiate or restart
+        music.destroy();
         this.game.state.start("startingame");
     }
 }
