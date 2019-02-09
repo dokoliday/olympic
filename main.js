@@ -77,7 +77,7 @@ const startingame = {
         // general background and musical theme
 
         this.galaxie = game.add.tileSprite(0, 0, 1000, 1090, "galaxie");
-        
+
         music.play('', 0, 1, true);
         // creating the principal avatar gamer
         //IMPORTANT!!! this two following lines must be rigth in this order and before add the avatar skills
@@ -127,9 +127,9 @@ const startingame = {
         this.addLife = game.time.events.loop(11500, this.addLife, this);
         this.bulletTimer = game.time.events.loop(15500, this.addCaisseFireOngroupOfMeteorites, this);
         this.missileTimer = game.time.events.loop(19800, this.addCaisseMissileOngroupOfMeteorites, this);
-        this.addOneSheep2Timer=game.time.events.loop(9000, this.addOneSheep2, this);
-        this.addOneSheep3Timer=game.time.events.loop(6000, this.addOneSheep3, this);
-        this.addOneSheep4Timer=game.time.events.loop(14000, this.addOneSheep4, this);
+        this.addOneSheep2Timer = game.time.events.loop(9000, this.addOneSheep2, this);
+        this.addOneSheep3Timer = game.time.events.loop(6000, this.addOneSheep3, this);
+        this.addOneSheep4Timer = game.time.events.loop(14000, this.addOneSheep4, this);
 
 
         // define groups
@@ -144,7 +144,7 @@ const startingame = {
         //create sheep on background
         if (this.life != 0) {
             var spacing = Math.floor(Math.random() * 750);
-            let Sheep2= game.add.sprite(800,spacing, "Sheep2");
+            let Sheep2 = game.add.sprite(800, spacing, "Sheep2");
             game.physics.arcade.enable(Sheep2);
             Sheep2.body.gravity.x = -spacing;
             Sheep2.checkWorldBounds = true;
@@ -157,7 +157,7 @@ const startingame = {
         //create sheep on background
         if (this.life != 0) {
             var spacing = Math.floor(Math.random() * 750);
-            let Sheep3= game.add.sprite(-350,spacing, "Sheep3");
+            let Sheep3 = game.add.sprite(-350, spacing, "Sheep3");
             game.physics.arcade.enable(Sheep3);
             Sheep3.body.gravity.x = spacing;
             Sheep3.checkWorldBounds = true;
@@ -171,7 +171,7 @@ const startingame = {
         //create sheep on background
         if (this.life != 0) {
             var spacing = Math.floor(Math.random() * 750);
-            let Sheep4= game.add.sprite(800,spacing, "Sheep4");
+            let Sheep4 = game.add.sprite(800, spacing, "Sheep4");
             game.physics.arcade.enable(Sheep4);
             Sheep4.body.gravity.x = -spacing;
             Sheep4.checkWorldBounds = true;
@@ -184,7 +184,7 @@ const startingame = {
     update: function () {
         if (this.life != 0) {
             //scrolling the background
-            this.galaxie.tilePosition.y += this.score/10;
+            this.galaxie.tilePosition.y += this.score / 10;
             // add a window to limit the movements of the aircraft in the size of the game screen
             if (this.plane.y < 0) this.plane.y = 0;
             if (this.plane.y > 800) this.plane.y = 800;
@@ -200,8 +200,8 @@ const startingame = {
             this.groupOfMissiles, this.groupOfMeteorites, this.collision, null, this);
         game.physics.arcade.overlap(
             this.plane, this.goupOfBulletBox, this.addbullet, null, this);
-            game.physics.arcade.overlap(
-                this.plane, this.groupOfmissilebox, this.addmissile, null, this);
+        game.physics.arcade.overlap(
+            this.plane, this.groupOfmissilebox, this.addmissile, null, this);
     },
     point: function () {
         //  Add and update the score
@@ -245,7 +245,7 @@ const startingame = {
             this.life += 1;
         this.lifeText.text = 'life: ' + this.life;
     },
-   
+
 
 
 
@@ -270,7 +270,7 @@ const startingame = {
             this.addOneMeteorite(spacing, 0);
         }
     },
-    
+
 
     fire: function () {
         if ((this.bullet != 0) && (this.life != 0)) {
@@ -306,7 +306,7 @@ const startingame = {
         this.addOneCaisseFire(spacing, 0);
     },
 
-    addbullet: function (x,y) {
+    addbullet: function (x, y) {
         //taking bullet boc add 10 bullets
         y.kill();
         this.bullet += 10;
@@ -355,7 +355,7 @@ const startingame = {
         this.addOneCaisseMissile(spacing, 0);
     },
 
-    addmissile: function (x,y) {
+    addmissile: function (x, y) {
         y.kill();
         this.caisseMissile += 3;
         this.missileText.text = 'missiles: ' + this.caisseMissile;
@@ -373,7 +373,7 @@ const startingame = {
             y.kill();
             explose.play();
             this.plane.body.velocity.y = 700;
-           
+
         } if (this.life > 0) {
             this.Lifepoint(1);
         } else {
@@ -393,7 +393,7 @@ const startingame = {
         this.game.state.start("startingame");
     }
 
-    
+
 }
 // Initialize Phaser, and create a 400px (width) by 490px (height) game
 var game = new Phaser.Game(800, 890);
