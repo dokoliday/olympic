@@ -80,7 +80,7 @@ const startingame = {
         const fire = game.input.keyboard.addKey(Phaser.Keyboard.F);
         fire.onDown.add(this.fire, this);
         const playAgain = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-        playAgain.onUp.add(this.playfunction, this);
+        if(music){playAgain.onUp.add(this.playfunction, this)};
 
 
         // define the variables games 
@@ -94,7 +94,7 @@ const startingame = {
         // millisecond;callback;environeent
         this.timer = game.time.events.loop(Phaser.Timer.SECOND * 1.5, this.addOngroupOfMeteorites, this);
         this.totalscoreTimer = game.time.events.loop(Phaser.Timer.SECOND * 0.25, this.point, this);
-        this.addLifeTimer = game.time.events.loop(Phaser.Timer.SECOND * 1.5, this.addLifeOnGroupOfMeteorite, this);
+        this.addLifeTimer = game.time.events.loop(Phaser.Timer.SECOND * 15.5, this.addLifeOnGroupOfMeteorite, this);
         this.bulletTimer = game.time.events.loop(Phaser.Timer.SECOND * 15.5, this.addCaisseFireOngroupOfMeteorites, this);
         this.missileTimer = game.time.events.loop(Phaser.Timer.SECOND * 20, this.addCaisseMissileOngroupOfMeteorites, this);
         this.addOneSheep2Timer = game.time.events.loop(Phaser.Timer.SECOND * 9, this.addOneSheep2, this);
@@ -111,7 +111,7 @@ const startingame = {
         this.groupOflifeBox = game.add.group();
     },
 
-    addOneSheep2: function (x, y) {
+    addOneSheep2: function () {
         //create sheep on background
         if (this.life != 0) {
             var spacing = Math.floor(Math.random() * 750);
@@ -124,7 +124,7 @@ const startingame = {
             Sheep2.height = spacing;
         }
     },
-    addOneSheep3: function (x, y) {
+    addOneSheep3: function () {
         //create sheep on background
         if (this.life != 0) {
             var spacing = Math.floor(Math.random() * 750);
@@ -138,7 +138,7 @@ const startingame = {
         }
     },
 
-    addOneSheep4: function (x, y) {
+    addOneSheep4: function () {
         //create sheep on background
         if (this.life != 0) {
             var spacing = Math.floor(Math.random() * 750);
@@ -345,7 +345,7 @@ const startingame = {
             x.kill();
             y.kill();
             this.again = game.add.sprite(80, 100, "again");
-            music.destroy();
+            if(music){music.destroy()};
             deadSong.play();
             gameover.play();
             this.playAgain
@@ -376,7 +376,8 @@ const startingame = {
     },
     playfunction: function () {
         // this function call the game component to initiate or restart
-        music.destroy();
+
+       if(music){music.destroy()};
         this.game.state.start("startingame");
     }
 
